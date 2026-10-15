@@ -461,7 +461,30 @@ const submitWithUpload = [uploadInline.single('avatar'), async (req, res) => {
   }
 }];
 
+// Revalida o PIX no Mercado Pago sem bloquear a resposta da página.
+// Se o pagamento expirou/foi cancelado, gera um novo QR code e salva no banco.
+async function refreshPixInBackground(regId) {
+  try {
+    const reg = await Registration.findByPk(regId);
+    if (!reg || !reg.mpPaymentId || reg.paymentStatus === 'paid') return;
+    const payment = await getPaymentById(reg.mpPaymentId);
+    const status = String(payment?.status || '').toLowerCase();
+    if (['expired', 'cancelled', 'rejected', 'refunded', 'charged_back'].includes(status)) {
+      const newPayment = await createPixPayment({ amount: reg.amount, description: `Inscrição ${reg.type}`, cpf: reg.cpf, email: null });
+      const ntx = newPayment?.point_of_interaction?.transaction_data || {};
+      reg.mpPaymentId = newPayment?.id ? String(newPayment.id) : reg.mpPaymentId;
+      reg.mpQrCode = ntx.qr_code || null;
+      reg.mpQrCodeBase64 = ntx.qr_code_base64 || null;
+      reg.mpTicketUrl = ntx.ticket_url || null;
+      await reg.save();
+    }
+  } catch (e) {
+    console.warn('Falha ao revalidar PIX em background:', e.message);
+  }
+}
+
 async function paymentPage(req, res) {
+  const t0 = Date.now();
   try {
     const { id } = req.params;
     const reg = await Registration.findByPk(id);
@@ -497,7 +520,10 @@ async function paymentPage(req, res) {
       }
     }
 
-    // Carregar/criar pagamento PIX
+    // Carregar/criar pagamento PIX.
+    // Performance: só bloqueamos na chamada externa ao Mercado Pago quando ainda
+    // NÃO existe QR salvo. Se o QR já está no banco, renderizamos imediatamente e
+    // revalidamos o pagamento em background (sem bloquear a resposta).
     if (!reg.mpPaymentId) {
       try {
         const payment = await createPixPayment({ amount: reg.amount, description: `Inscrição ${reg.type}`, cpf: reg.cpf, email: null });
@@ -515,7 +541,9 @@ async function paymentPage(req, res) {
         } catch (_) {}
         req.session.flash = { type: 'error', message: 'Pagamento PIX indisponível no momento. Verifique MP_ACCESS_TOKEN (teste/produção) e habilite PIX.' };
       }
-    } else {
+    } else if (!reg.mpQrCode || !reg.mpQrCodeBase64) {
+      // PIX já criado, mas sem QR salvo: recupera os dados do pagamento existente
+      // (sem criar um novo, para não gerar cobrança duplicada).
       try {
         const payment = await getPaymentById(reg.mpPaymentId);
         const status = String(payment?.status || '').toLowerCase();
@@ -527,19 +555,21 @@ async function paymentPage(req, res) {
           reg.mpQrCode = ntx.qr_code || null;
           reg.mpQrCodeBase64 = ntx.qr_code_base64 || null;
           reg.mpTicketUrl = ntx.ticket_url || null;
-          await reg.save();
         } else {
           reg.mpQrCode = tx.qr_code || reg.mpQrCode || null;
           reg.mpQrCodeBase64 = tx.qr_code_base64 || reg.mpQrCodeBase64 || null;
           reg.mpTicketUrl = tx.ticket_url || reg.mpTicketUrl || null;
-          await reg.save();
         }
+        await reg.save();
       } catch (e) {
         try {
-          console.warn('Falha ao carregar/criar pagamento PIX:', e.message);
+          console.warn('Falha ao recuperar pagamento PIX:', e.message);
           console.warn('Detalhes:', { status: e?.status, cause: e?.cause, error: e?.error });
         } catch (_) {}
       }
+    } else {
+      // QR já disponível: responde rápido e revalida no Mercado Pago fora do request.
+      setImmediate(() => { refreshPixInBackground(reg.id); });
     }
 
     const viewReg = reg?.get ? reg.get({ plain: true }) : reg;
@@ -550,6 +580,7 @@ async function paymentPage(req, res) {
     const showCardNameSub = !!viewReg.realName && (greetingNameRaw !== cardNameRaw);
     const cardNameSub = cardNameRaw;
     res.render('inscricao_pagamento', { reg: viewReg, displayAmount, activeNav: 'inscricao', greetingName, showCardNameSub, cardNameSub });
+    console.log(`[pagamento] inscrição ${viewReg.id} respondida em ${Date.now() - t0}ms`);
   } catch (err) {
     console.error('Erro ao exibir pagamento:', err);
     res.status(500).send('Erro interno');
