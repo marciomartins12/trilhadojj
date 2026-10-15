@@ -1574,60 +1574,97 @@ body.no-scroll {
 
 /* ícones de ciclistas removidos */
 
+/* === Informações do percurso (Distância / Tipo / Tempo Médio) ===
+   Ficam SEMPRE os três lado a lado (mesma lógica dos destaques do "Sobre"),
+   cada um como um cartãozinho com ícone em cima, rótulo e valor. Antes a
+   grade tinha só 2 colunas, então "Tempo Médio" ficava sozinho na segunda
+   linha ocupando metade da largura — era o que deixava o bloco desalinhado. */
 .details__stats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
   align-items: stretch;
 }
 
-@media (min-width: 600px) {
-  .details__stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 900px) {
-  .details__stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.stat {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
-  padding: 14px 16px;
-  min-height: 60px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 12px;
-  row-gap: 4px;
+.details__stats .stat {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 14px 8px 12px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
 }
 
-.stat__label {
-  opacity: 0.95;
+/* Ícone laranja, o mesmo acento usado nos destaques do "Sobre" e nos botões */
+.details__stats .stat__icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(180deg, #FB923C, var(--secondary));
+  box-shadow: 0 8px 18px rgba(249, 115, 22, 0.35);
+}
+
+.details__stats .stat__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.details__stats .stat__label {
+  font-size: 0.7rem;
   font-weight: 600;
-  margin-right: 0;
+  line-height: 1.2;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
   white-space: normal;
+  overflow-wrap: break-word;
 }
 
-.stat__value {
+.details__stats .stat__value {
+  font-size: 1.1rem;
   font-weight: 800;
+  line-height: 1.15;
   color: var(--secondary);
+  text-align: center;
   white-space: normal;
   overflow-wrap: anywhere;
-  text-align: right;
 }
 
-@media (max-width: 600px) {
-  .stat__label {
-    font-size: 0.95rem;
+/* Desktop: cartões mais folgados, aproveitando a largura extra */
+@media (min-width: 768px) {
+  .details__stats {
+    gap: 12px;
   }
 
-  .stat__value {
-    font-size: 1.1rem;
+  .details__stats .stat {
+    gap: 8px;
+    padding: 18px 12px 16px;
+  }
+
+  .details__stats .stat__icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .details__stats .stat__icon svg {
+    width: 23px;
+    height: 23px;
+  }
+
+  .details__stats .stat__label {
+    font-size: 0.75rem;
+  }
+
+  .details__stats .stat__value {
+    font-size: 1.25rem;
   }
 }
 
