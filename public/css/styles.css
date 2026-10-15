@@ -1815,13 +1815,18 @@ body.no-scroll {
   }
 }
 
-.perks-list.is-collapsed li:nth-child(n+5) {
+/* Recolhido: mostra apenas os 2 primeiros itens do kit.
+   Antes escondia a partir do 5º e só valia no celular (havia um override que
+   reexibia tudo no desktop). Agora vale em qualquer tela. */
+.perks-list.is-collapsed li:nth-child(n+3) {
   display: none;
 }
 
+/* No desktop, com 2 itens e a grade de 3 colunas, sobraria um buraco à
+   direita. Em 2 colunas os dois cards preenchem a linha. */
 @media (min-width: 768px) {
-  .perks-list.is-collapsed li:nth-child(n+5) {
-    display: flex;
+  .perks-list.is-collapsed {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1943,12 +1948,6 @@ body.no-scroll {
   padding: 10px 22px;
   font-size: 0.95rem;
   letter-spacing: 0.2px;
-}
-
-@media (min-width: 768px) {
-  .perks-actions {
-    display: none;
-  }
 }
 
 @media (max-width: 767px) {
