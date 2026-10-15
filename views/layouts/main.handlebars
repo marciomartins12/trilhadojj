@@ -14,9 +14,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <title>{{pageTitle}}</title>
     <link rel="icon" type="image/svg+xml" href="{{asset '/public/img/favicon-bike.svg'}}" />
-    <!-- Preload textura + peixe para mobile pintar mais rápido (LCP / first paint) -->
+    <!-- Preload textura de fundo do body (usada em TODAS as páginas — leve, 18KB) -->
     <link rel="preload" as="image" fetchpriority="high" href="{{asset '/public/img/fundoMato.webp'}}" type="image/webp" />
+    <!-- O peixefundo (260KB) só é usado no hero da home. Preload apenas lá,
+         senão ele compete com o CSS (render-blocking) e atrasa a primeira pintura. -->
+    {{#if (eq activeNav 'home')}}
     <link rel="preload" as="image" fetchpriority="high" href="{{asset '/public/img/peixefundo.webp'}}" type="image/webp" />
+    {{/if}}
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -91,10 +95,10 @@
         </div>
       </div>
     </div>
-    <script src="{{asset '/public/js/menu.js'}}"></script>
-    <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
-    <script src="{{asset '/public/js/inscricao.js'}}"></script>
-    <script src="{{asset '/public/js/gallery.js'}}"></script>
+    <script defer src="{{asset '/public/js/menu.js'}}"></script>
+    <script defer src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+    <script defer src="{{asset '/public/js/inscricao.js'}}"></script>
+    <script defer src="{{asset '/public/js/gallery.js'}}"></script>
     <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
     <div class="modal hidden" id="global-confirm-modal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal__dialog" role="document">
@@ -121,9 +125,11 @@
         </div>
       </div>
     </div>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
-      (function() {
+      // Os scripts com defer executam ANTES do DOMContentLoaded, então neste
+      // ponto o lucide já está disponível — sem bloquear o parse da página.
+      document.addEventListener('DOMContentLoaded', function () {
         try {
           if (window.lucide && typeof window.lucide.createIcons === 'function') {
             window.lucide.createIcons({
@@ -138,7 +144,7 @@
             });
           }
         } catch (e) { }
-      })();
+      });
     </script>
   </body>
   

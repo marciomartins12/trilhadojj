@@ -16,6 +16,19 @@ const REG_LIGHT_ATTRS = { exclude: ['avatarData'] };
 // No polling de status só precisamos de id/paymentStatus/mpPaymentId.
 const REG_STATUS_ATTRS = { exclude: ['avatarData', 'avatarPath', 'mpQrCode', 'mpQrCodeBase64', 'mpTicketUrl'] };
 
+// O front consulta /inscricao/status/:id a cada 5s. Consultar o Mercado Pago em
+// TODA checagem onera o servidor sem necessidade. Revalidamos no MP no máximo a
+// cada MP_STATUS_MIN_INTERVAL_MS por inscrição; nas checagens intermediárias
+// devolvemos apenas o status já salvo no banco (consulta leve).
+const MP_STATUS_MIN_INTERVAL_MS = 20000;
+const lastMpStatusCheck = new Map();
+
+// Criação do PIX disparada em background logo após a inscrição. Existe para que o
+// QR já esteja pronto quando a página de pagamento abrir — sem isso, a PRIMEIRA
+// visita precisa esperar a chamada ao Mercado Pago (vários segundos).
+// O Map guarda a promessa em andamento para não gerar dois PIX para a mesma inscrição.
+const pixPrefetchInFlight = new Map();
+
 async function assignPaidOrderIfNeeded(regOrId, overrides) {
   let lastErr = null;
   for (let attempt = 1; attempt <= MAX_PAIDORDER_RETRIES; attempt++) {
@@ -401,6 +414,7 @@ const submitWithUpload = [uploadInline.single('avatar'), async (req, res) => {
           return res.render('inscricao_encerrada', { layout: 'main', activeNav: 'inscricao', limitAcompanhantes: true });
         }
         req.session.flash = { type: 'info', message: (dirty ? 'Dados atualizados (inclusive foto). Prossiga com o pagamento.' : 'Você já iniciou uma inscrição com este CPF. Prossiga com o pagamento abaixo.') };
+        setImmediate(() => prefetchPix(existing.id));
         return res.redirect(`/inscricao/pagamento/${existing.id}`);
       }
       req.session.flash = { type: 'info', message: dirty ? 'Dados atualizados. Sua inscrição já está paga; veja seu cartão abaixo.' : 'Você já possui uma inscrição paga com este CPF.' };
@@ -460,6 +474,7 @@ const submitWithUpload = [uploadInline.single('avatar'), async (req, res) => {
       }
     }
     req.session.flash = { type: 'info', message: 'Dados enviados para o banco de dados. Faça o pagamento para confirmar sua inscrição.' };
+    setImmediate(() => prefetchPix(reg.id));
     return res.redirect(`/inscricao/pagamento/${reg.id}`);
   } catch (err) {
     console.error('Erro ao submeter inscrição (com upload):', err);
@@ -524,6 +539,30 @@ async function refreshPixInBackground(regId) {
   } catch (e) {
     console.warn('Falha ao revalidar PIX em background:', e.message);
   }
+}
+
+// Dispara (sem bloquear) a criação do PIX logo após a inscrição. Nada aqui é
+// aguardado pela resposta HTTP: se o Mercado Pago falhar, a página de pagamento
+// simplesmente tenta de novo pelo endpoint /inscricao/pix/:id.
+function prefetchPix(regId) {
+  if (!regId) return null;
+  const running = pixPrefetchInFlight.get(regId);
+  if (running) return running;
+  const task = (async () => {
+    try {
+      const reg = await Registration.findByPk(regId, { attributes: REG_LIGHT_ATTRS });
+      if (!reg || reg.paymentStatus === 'paid') return;
+      if (!reg.mpPaymentId || !reg.mpQrCode || !reg.mpQrCodeBase64) {
+        await ensurePixForRegistration(reg);
+      }
+    } catch (e) {
+      console.warn('Pré-geração do PIX falhou (será tentada na página de pagamento):', e.message);
+    } finally {
+      pixPrefetchInFlight.delete(regId);
+    }
+  })();
+  pixPrefetchInFlight.set(regId, task);
+  return task;
 }
 
 async function paymentPage(req, res) {
@@ -592,12 +631,20 @@ async function paymentPage(req, res) {
 async function ensurePix(req, res) {
   try {
     const { id } = req.params;
-    const reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
+    let reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
     if (!reg) return res.status(404).json({ error: 'Inscrição não encontrada' });
     if (reg.paymentStatus === 'paid') return res.json({ status: 'paid' });
 
     if (!reg.mpPaymentId || !reg.mpQrCode || !reg.mpQrCodeBase64) {
-      await ensurePixForRegistration(reg);
+      // Se a pré-geração disparada na inscrição ainda está rodando, apenas
+      // aguardamos ela — em vez de criar um segundo PIX para a mesma inscrição.
+      const inFlight = pixPrefetchInFlight.get(id);
+      if (inFlight) {
+        await inFlight.catch(() => {});
+        reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS }) || reg;
+      } else {
+        await ensurePixForRegistration(reg);
+      }
     }
 
     return res.json({
@@ -658,18 +705,27 @@ async function paymentStatus(req, res) {
     const reg = await Registration.findByPk(id, { attributes: REG_STATUS_ATTRS });
     if (!reg) return res.status(404).json({ error: 'Inscrição não encontrada' });
 
-    // Fallback: se ainda estiver pendente e houver mpPaymentId, consultar status no Mercado Pago
+    // Fallback: se ainda estiver pendente e houver mpPaymentId, consultar status no
+    // Mercado Pago — porém com throttle, para não bater na API a cada 5s.
     if (reg.paymentStatus !== 'paid' && reg.mpPaymentId) {
-      try {
-        const payment = await getPaymentById(reg.mpPaymentId);
-        if (payment?.status === 'approved') {
-          reg.paymentStatus = 'paid';
-          await reg.save();
-          await assignPaidOrderIfNeeded(reg);
+      const now = Date.now();
+      const last = lastMpStatusCheck.get(reg.id) || 0;
+      if (now - last >= MP_STATUS_MIN_INTERVAL_MS) {
+        lastMpStatusCheck.set(reg.id, now);
+        try {
+          const payment = await getPaymentById(reg.mpPaymentId);
+          if (payment?.status === 'approved') {
+            reg.paymentStatus = 'paid';
+            await reg.save();
+            await assignPaidOrderIfNeeded(reg);
+          }
+        } catch (e) {
+          // silencioso; manter pending
         }
-      } catch (e) {
-        // silencioso; manter pending 
       }
+    } else if (reg.paymentStatus === 'paid') {
+      // Já confirmado: libera a entrada do throttle.
+      lastMpStatusCheck.delete(reg.id);
     }
 
     return res.json({ id: reg.id, status: reg.paymentStatus });
@@ -681,7 +737,7 @@ async function paymentStatus(req, res) {
 async function avatarPage(req, res) {
   try {
     const { id } = req.params;
-    const reg = await Registration.findByPk(id);
+    const reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
     if (!reg) return res.status(404).send('Inscrição não encontrada');
     if (reg.paymentStatus !== 'paid') return res.redirect(`/inscricao/pagamento/${reg.id}`);
     return res.redirect(`/inscricao/card/${reg.id}`);
@@ -722,7 +778,7 @@ const uploadAvatar = [upload.single('avatar'), async (req, res) => {
 async function cardPage(req, res) {
   try {
     const { id } = req.params;
-    const reg = await Registration.findByPk(id);
+    const reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
     if (!reg) return res.status(404).send('Inscrição não encontrada');
     if (reg.paymentStatus !== 'paid') return res.redirect(`/inscricao/pagamento/${reg.id}`);
   const medalCutoff = Number(process.env.MEDAL_CUTOFF || 300);
@@ -749,7 +805,7 @@ async function cardPage(req, res) {
 async function cardData(req, res) {
   try {
     const { id } = req.params;
-    const reg = await Registration.findByPk(id);
+    const reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
     if (!reg) return res.status(404).json({ error: 'Inscrição não encontrada' });
     if (reg.paymentStatus !== 'paid') return res.status(403).json({ error: 'Pagamento não confirmado' });
     const payload = {
