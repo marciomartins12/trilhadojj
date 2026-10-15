@@ -19,7 +19,7 @@
     url('/public/img/fundoMato.png');
 
   --tint-section:
-    linear-gradient(  ##005880a2, #207f909e);
+    linear-gradient(  #005880a2, #207f909e);
 
   --texture-hero:
     linear-gradient(180deg, rgba(5, 30, 46, 0.815) 0%, rgba(9, 48, 73, 0.815)),
@@ -51,20 +51,29 @@ body {
   font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
   color: var(--text);
 
-  /* Floresta fixa de fundo + cor sólida de fallback para antes de carregar */
+  /* Cor sólida de fallback (aparece antes da textura carregar) */
+  background-color: #052e16;
+}
+
+/* A textura da floresta vive numa CAMADA FIXA que cobre a tela inteira.
+   Antes ela ficava direto no `background-image` do body. O problema: o body
+   tem `height: 100%` (só a altura da tela) e `background-repeat: no-repeat`,
+   então em páginas longas a imagem cobria apenas a PRIMEIRA tela. O resto da
+   página ficava com o verde de fallback, aparecendo uma faixa sem textura
+   embaixo (bem visível no celular, onde o attachment era `scroll`).
+   Como esta camada é `position: fixed`, ela cobre 100% da viewport em
+   qualquer tamanho de tela e em qualquer ponto do scroll — sem buraco. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-color: #052e16;
   background-image: var(--texture-mato-only);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
-  /* Mobile (<= 767px): attachment scroll (evita bug renderização) */
-  background-attachment: scroll;
-}
-
-/* Desktop (>= 768px): attachment FIXED de verdade — efeito parallax suave e 1 única floresta */
-@media (min-width: 768px) {
-  body { background-attachment: fixed; }
 }
 
 /* Admin pages: remove a floresta para fundo verde limpo estilo dashboard */
@@ -72,6 +81,10 @@ body {
   background-image: none !important;
   background-color: var(--primary-700) !important;
   background-attachment: initial;
+}
+
+.admin-page::before {
+  display: none;
 }
 
 /* Navbar */
@@ -3254,9 +3267,9 @@ body.no-scroll {
 }
 
 /* Mobile com dados reduzidos (3G, Android 8-): pular PNG fallback
-   (fica só WebP no body — 1 única requisição de textura) */
+   (fica só WebP na camada fixa — 1 única requisição de textura) */
 @media (max-width: 767px) and (prefers-reduced-data: reduce) {
-  body {
+  body::before {
     background-image: url('/public/img/fundoMato.webp');
   }
   .hero {
