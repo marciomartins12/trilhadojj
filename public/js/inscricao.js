@@ -245,6 +245,44 @@ document.addEventListener('DOMContentLoaded', () => {
       poll();
       pollingTimer = setInterval(poll, 5000);
     }, 1500);
+
+    // Carregar o QR Code do PIX de forma assíncrona quando ainda não veio no HTML.
+    // Assim a página de pagamento abre na hora, sem esperar a chamada ao Mercado Pago.
+    const pixContainer = document.getElementById('pix-container');
+    if (pixContainer && !pixContainer.querySelector('.pix__qr') && regId) {
+      (async () => {
+        try {
+          const res = await fetch(`/inscricao/pix/${regId}`, { headers: { 'Accept': 'application/json' } });
+          const data = await res.json().catch(() => null);
+          if (!res.ok || !data || !data.qrCodeBase64) {
+            throw new Error((data && data.error) || 'QR indisponível');
+          }
+          const wrap = pixContainer.querySelector('.pix__qr-wrap');
+          if (wrap) {
+            wrap.classList.remove('pix__qr-wrap--loading');
+            wrap.innerHTML = '';
+            const img = document.createElement('img');
+            img.className = 'pix__qr';
+            img.alt = 'QR Code PIX';
+            img.src = `data:image/png;base64,${data.qrCodeBase64}`;
+            wrap.appendChild(img);
+          }
+          const caption = document.getElementById('pix-caption');
+          if (caption) caption.textContent = 'Escaneie o QR code no seu banco para pagar.';
+          if (data.qrCode) {
+            const input = document.getElementById('pix-code');
+            const group = document.getElementById('pix-codegroup');
+            if (input) input.value = data.qrCode;
+            if (group) group.classList.remove('hidden');
+          }
+        } catch (e) {
+          const caption = document.getElementById('pix-caption');
+          if (caption) caption.textContent = (e && e.message) || 'Não foi possível gerar o QR Code agora. Recarregue a página em instantes.';
+          const spinner = pixContainer.querySelector('.status__spinner');
+          if (spinner) spinner.style.display = 'none';
+        }
+      })();
+    }
   }
 
   // Validações de CPF e Telefone no cliente

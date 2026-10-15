@@ -58,6 +58,7 @@ router.post('/admin/usuarios/novo', AdminController.usersCreate);
 router.get('/inscricao', RegistrationController.formPage);
 router.post('/inscricao', RegistrationController.submitWithUpload);
 router.get('/inscricao/pagamento/:id', RegistrationController.paymentPage);
+router.get('/inscricao/pix/:id', RegistrationController.ensurePix);
 router.get('/inscricao/status/:id', RegistrationController.paymentStatus);
 router.get('/inscricao/avatar/:id', RegistrationController.avatarPage);
 router.post('/inscricao/avatar/:id', RegistrationController.uploadAvatar);

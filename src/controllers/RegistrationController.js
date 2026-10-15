@@ -9,6 +9,13 @@ const { createPixPayment, getPaymentById, cancelPayment } = require('../services
 
 const MAX_PAIDORDER_RETRIES = 5;
 
+// A coluna avatarData é um BLOB('long') com a foto processada (centenas de KB).
+// Carregá-la em toda consulta desperdiça banda/IO do banco (e é chamada em loop
+// no polling de status). Excluímos onde a imagem não é necessária.
+const REG_LIGHT_ATTRS = { exclude: ['avatarData'] };
+// No polling de status só precisamos de id/paymentStatus/mpPaymentId.
+const REG_STATUS_ATTRS = { exclude: ['avatarData', 'avatarPath', 'mpQrCode', 'mpQrCodeBase64', 'mpTicketUrl'] };
+
 async function assignPaidOrderIfNeeded(regOrId, overrides) {
   let lastErr = null;
   for (let attempt = 1; attempt <= MAX_PAIDORDER_RETRIES; attempt++) {
@@ -461,11 +468,47 @@ const submitWithUpload = [uploadInline.single('avatar'), async (req, res) => {
   }
 }];
 
+// Garante que exista um PIX válido para a inscrição (cria se necessário e
+// recupera o QR quando o pagamento já existe mas o QR não foi salvo).
+// É a operação "cara" (chamada externa ao Mercado Pago) — deve rodar fora do
+// caminho crítico de renderização da página.
+async function ensurePixForRegistration(reg) {
+  if (!reg.mpPaymentId) {
+    const payment = await createPixPayment({ amount: reg.amount, description: `Inscrição ${reg.type}`, cpf: reg.cpf, email: null });
+    console.log('Pagamento PIX criado:', { id: payment?.id, status: payment?.status });
+    const tx = payment.point_of_interaction?.transaction_data || {};
+    reg.mpPaymentId = payment?.id ? String(payment.id) : reg.mpPaymentId;
+    reg.mpQrCode = tx.qr_code || null;
+    reg.mpQrCodeBase64 = tx.qr_code_base64 || null;
+    reg.mpTicketUrl = tx.ticket_url || null;
+    await reg.save();
+    return reg;
+  }
+
+  const payment = await getPaymentById(reg.mpPaymentId);
+  const status = String(payment?.status || '').toLowerCase();
+  const tx = payment?.point_of_interaction?.transaction_data || {};
+  if (['expired', 'cancelled', 'rejected', 'refunded', 'charged_back'].includes(status)) {
+    const newPayment = await createPixPayment({ amount: reg.amount, description: `Inscrição ${reg.type}`, cpf: reg.cpf, email: null });
+    const ntx = newPayment?.point_of_interaction?.transaction_data || {};
+    reg.mpPaymentId = newPayment?.id ? String(newPayment.id) : reg.mpPaymentId;
+    reg.mpQrCode = ntx.qr_code || null;
+    reg.mpQrCodeBase64 = ntx.qr_code_base64 || null;
+    reg.mpTicketUrl = ntx.ticket_url || null;
+  } else {
+    reg.mpQrCode = tx.qr_code || reg.mpQrCode || null;
+    reg.mpQrCodeBase64 = tx.qr_code_base64 || reg.mpQrCodeBase64 || null;
+    reg.mpTicketUrl = tx.ticket_url || reg.mpTicketUrl || null;
+  }
+  await reg.save();
+  return reg;
+}
+
 // Revalida o PIX no Mercado Pago sem bloquear a resposta da página.
 // Se o pagamento expirou/foi cancelado, gera um novo QR code e salva no banco.
 async function refreshPixInBackground(regId) {
   try {
-    const reg = await Registration.findByPk(regId);
+    const reg = await Registration.findByPk(regId, { attributes: REG_LIGHT_ATTRS });
     if (!reg || !reg.mpPaymentId || reg.paymentStatus === 'paid') return;
     const payment = await getPaymentById(reg.mpPaymentId);
     const status = String(payment?.status || '').toLowerCase();
@@ -487,7 +530,7 @@ async function paymentPage(req, res) {
   const t0 = Date.now();
   try {
     const { id } = req.params;
-    const reg = await Registration.findByPk(id);
+    const reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
     if (!reg) return res.status(404).send('Inscrição não encontrada');
     if (reg.type === 'ATLETA' && reg.paymentStatus !== 'paid' && await hasReachedAthleteLimit()) {
       return res.render('inscricao_encerrada', { layout: 'main', activeNav: 'inscricao', limitAtletas: true });
@@ -520,55 +563,12 @@ async function paymentPage(req, res) {
       }
     }
 
-    // Carregar/criar pagamento PIX.
-    // Performance: só bloqueamos na chamada externa ao Mercado Pago quando ainda
-    // NÃO existe QR salvo. Se o QR já está no banco, renderizamos imediatamente e
-    // revalidamos o pagamento em background (sem bloquear a resposta).
-    if (!reg.mpPaymentId) {
-      try {
-        const payment = await createPixPayment({ amount: reg.amount, description: `Inscrição ${reg.type}`, cpf: reg.cpf, email: null });
-        console.log('Pagamento PIX criado:', { id: payment?.id, status: payment?.status });
-        const tx = payment.point_of_interaction?.transaction_data || {};
-        reg.mpPaymentId = payment?.id ? String(payment.id) : reg.mpPaymentId;
-        reg.mpQrCode = tx.qr_code || null;
-        reg.mpQrCodeBase64 = tx.qr_code_base64 || null;
-        reg.mpTicketUrl = tx.ticket_url || null;
-        await reg.save();
-      } catch (e) {
-        console.warn('Falha ao criar pagamento PIX:', e.message);
-        try {
-          console.warn('Detalhes do erro (create):', { status: e?.status, cause: e?.cause, error: e?.error });
-        } catch (_) {}
-        req.session.flash = { type: 'error', message: 'Pagamento PIX indisponível no momento. Verifique MP_ACCESS_TOKEN (teste/produção) e habilite PIX.' };
-      }
-    } else if (!reg.mpQrCode || !reg.mpQrCodeBase64) {
-      // PIX já criado, mas sem QR salvo: recupera os dados do pagamento existente
-      // (sem criar um novo, para não gerar cobrança duplicada).
-      try {
-        const payment = await getPaymentById(reg.mpPaymentId);
-        const status = String(payment?.status || '').toLowerCase();
-        const tx = payment?.point_of_interaction?.transaction_data || {};
-        if (['expired', 'cancelled', 'rejected', 'refunded', 'charged_back'].includes(status)) {
-          const newPayment = await createPixPayment({ amount: reg.amount, description: `Inscrição ${reg.type}`, cpf: reg.cpf, email: null });
-          const ntx = newPayment?.point_of_interaction?.transaction_data || {};
-          reg.mpPaymentId = newPayment?.id ? String(newPayment.id) : reg.mpPaymentId;
-          reg.mpQrCode = ntx.qr_code || null;
-          reg.mpQrCodeBase64 = ntx.qr_code_base64 || null;
-          reg.mpTicketUrl = ntx.ticket_url || null;
-        } else {
-          reg.mpQrCode = tx.qr_code || reg.mpQrCode || null;
-          reg.mpQrCodeBase64 = tx.qr_code_base64 || reg.mpQrCodeBase64 || null;
-          reg.mpTicketUrl = tx.ticket_url || reg.mpTicketUrl || null;
-        }
-        await reg.save();
-      } catch (e) {
-        try {
-          console.warn('Falha ao recuperar pagamento PIX:', e.message);
-          console.warn('Detalhes:', { status: e?.status, cause: e?.cause, error: e?.error });
-        } catch (_) {}
-      }
-    } else {
-      // QR já disponível: responde rápido e revalida no Mercado Pago fora do request.
+    // PIX: a renderização da página NUNCA espera o Mercado Pago.
+    // - Se o QR já está salvo no banco, exibe imediatamente e revalida em background.
+    // - Se ainda não existe, a página mostra "gerando..." e o front chama
+    //   GET /inscricao/pix/:id, que cria/recupera o PIX fora do caminho crítico.
+    const hasPix = !!(reg.mpPaymentId && reg.mpQrCode && reg.mpQrCodeBase64);
+    if (hasPix) {
       setImmediate(() => { refreshPixInBackground(reg.id); });
     }
 
@@ -587,6 +587,34 @@ async function paymentPage(req, res) {
   }
 }
 
+// Endpoint assíncrono chamado pela página de pagamento quando o QR ainda não
+// está salvo. Cria/recupera o PIX e devolve os dados em JSON.
+async function ensurePix(req, res) {
+  try {
+    const { id } = req.params;
+    const reg = await Registration.findByPk(id, { attributes: REG_LIGHT_ATTRS });
+    if (!reg) return res.status(404).json({ error: 'Inscrição não encontrada' });
+    if (reg.paymentStatus === 'paid') return res.json({ status: 'paid' });
+
+    if (!reg.mpPaymentId || !reg.mpQrCode || !reg.mpQrCodeBase64) {
+      await ensurePixForRegistration(reg);
+    }
+
+    return res.json({
+      status: reg.paymentStatus,
+      qrCode: reg.mpQrCode || null,
+      qrCodeBase64: reg.mpQrCodeBase64 || null,
+      ticketUrl: reg.mpTicketUrl || null,
+    });
+  } catch (e) {
+    console.warn('Falha ao gerar PIX:', e.message);
+    try {
+      console.warn('Detalhes do erro (ensurePix):', { status: e?.status, cause: e?.cause, error: e?.error });
+    } catch (_) {}
+    return res.status(502).json({ error: 'Não foi possível gerar o PIX agora. Recarregue a página em instantes.' });
+  }
+}
+
 async function webhook(req, res) {
   try {
     // Suportar diferentes formatos do webhook: query.id, body.data.id, body.id, body.resource
@@ -599,12 +627,12 @@ async function webhook(req, res) {
     const payment = await getPaymentById(id);
     if (String(payment?.status || '').toLowerCase() === 'approved') {
       const mpId = String(payment.id);
-      let reg = await Registration.findOne({ where: { mpPaymentId: mpId } });
+      let reg = await Registration.findOne({ where: { mpPaymentId: mpId }, attributes: REG_LIGHT_ATTRS });
       if (!reg) {
         const cpfRaw = payment?.payer?.identification?.number || '';
         const cpfDigits = onlyDigits(String(cpfRaw));
         if (cpfDigits) {
-          reg = await Registration.findOne({ where: { cpf: cpfDigits } });
+          reg = await Registration.findOne({ where: { cpf: cpfDigits }, attributes: REG_LIGHT_ATTRS });
           if (reg) {
             reg.mpPaymentId = mpId;
           }
@@ -627,7 +655,7 @@ async function webhook(req, res) {
 async function paymentStatus(req, res) {
   try {
     const { id } = req.params;
-    const reg = await Registration.findByPk(id);
+    const reg = await Registration.findByPk(id, { attributes: REG_STATUS_ATTRS });
     if (!reg) return res.status(404).json({ error: 'Inscrição não encontrada' });
 
     // Fallback: se ainda estiver pendente e houver mpPaymentId, consultar status no Mercado Pago
@@ -925,4 +953,4 @@ async function lookupByCpf(req, res) {
   }
 }
 
-module.exports = { formPage, submit, submitWithUpload, paymentPage, webhook, paymentStatus, avatarPage, uploadAvatar, cardPage, avatarData, cardData, cardDownload, cardDownloadCanvas, lookupByCpf, composeCard, assignPaidOrderIfNeeded, parseBirthDate, calcAmount };
+module.exports = { formPage, submit, submitWithUpload, paymentPage, ensurePix, webhook, paymentStatus, avatarPage, uploadAvatar, cardPage, avatarData, cardData, cardDownload, cardDownloadCanvas, lookupByCpf, composeCard, assignPaidOrderIfNeeded, parseBirthDate, calcAmount };

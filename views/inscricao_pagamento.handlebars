@@ -15,27 +15,28 @@
           <span>Valor: <strong>R$ {{displayAmount}}</strong></span>
         </div>
 
-        {{#if reg.mpQrCodeBase64}}
-          <div class="pix">
+        <div class="pix" id="pix-container">
+          {{#if reg.mpQrCodeBase64}}
             <div class="pix__qr-wrap">
               <img src="data:image/png;base64,{{reg.mpQrCodeBase64}}" alt="QR Code PIX para {{reg.name}}" class="pix__qr" />
             </div>
             <p class="pix__caption">Escaneie o QR code no seu banco para pagar.</p>
-          </div>
-        {{else}}
-          <div class="alert">QR Code indisponível. Verifique configuração do Mercado Pago.</div>
-        {{/if}}
-
-        {{#if reg.mpQrCode}}
-          <div class="pix__codegroup">
-            <label for="pix-code">PIX Copia e Cola</label>
-            <div class="pix__row">
-              <input id="pix-code" type="text" readonly value="{{reg.mpQrCode}}" />
-              <button type="button" class="btn" id="copy-pix">Copiar</button>
+          {{else}}
+            <div class="pix__qr-wrap pix__qr-wrap--loading">
+              <div class="status__spinner" aria-hidden="true"></div>
             </div>
-            <small class="pix__hint">Se preferir, copie e cole este código no app do seu banco.</small>
+            <p class="pix__caption" id="pix-caption">Gerando QR Code do PIX...</p>
+          {{/if}}
         </div>
-        {{/if}}
+
+        <div class="pix__codegroup{{#unless reg.mpQrCode}} hidden{{/unless}}" id="pix-codegroup">
+          <label for="pix-code">PIX Copia e Cola</label>
+          <div class="pix__row">
+            <input id="pix-code" type="text" readonly value="{{reg.mpQrCode}}" />
+            <button type="button" class="btn" id="copy-pix">Copiar</button>
+          </div>
+          <small class="pix__hint">Se preferir, copie e cole este código no app do seu banco.</small>
+        </div>
 
         {{#if reg.mpTicketUrl}}
           <p><a href="{{reg.mpTicketUrl}}" target="_blank" rel="noopener" class="btn">Abrir boleto/QR</a></p>

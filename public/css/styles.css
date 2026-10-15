@@ -2247,6 +2247,7 @@ body.no-scroll {
 .pix { display: grid; place-items: center; gap: 6px; margin: 10px 0; }
 .pix__qr { max-width: 240px; border-radius: 12px; background: #052e16; padding: 10px; box-shadow: 0 6px 16px rgba(0,0,0,0.25); border: 1px solid var(--secondary); }
 .pix__qr-wrap { padding: 8px; border-radius: 14px; background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border: 1px dashed var(--secondary); }
+.pix__qr-wrap--loading { min-height: 240px; display: grid; place-items: center; }
 .pix__caption { opacity: 1; margin-top: 6px; color: #fff; }
 .pix__codegroup { margin: 12px 0; }
 .pix__codegroup label { color: var(--secondary); font-weight: 700; }
