@@ -1033,11 +1033,6 @@ body.no-scroll {
   color: #fff;
 }
 
-.about__card .feature__icon {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-}
-
 .about__card .feature__icon svg {
   color: #fff;
 }
@@ -1054,28 +1049,47 @@ body.no-scroll {
   color: var(--primary-700);
 }
 
+/* Três destaques (Espírito de Equipe / Desafio Constante / Pura Adrenalina).
+   Ficam SEMPRE os três lado a lado, inclusive no celular, para não ocupar
+   altura demais. Cada um virou um cartãozinho para dar melhor acabamento. */
 .features {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 14px 8px 12px;
   text-align: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
 }
 
+/* Ícone em LARANJA (--secondary), o acento da página: é a mesma cor do
+   divisor sob o título, do texto em destaque e dos botões. Antes era verde
+   sobre verde e ficava "lamacento"; o laranja dá contraste e amarra com o resto. */
 .feature__icon {
-  width: 56px;
-  height: 56px;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: var(--primary);
   display: grid;
   place-items: center;
-  margin: 0 auto 8px;
+  margin: 0;
+  background: linear-gradient(180deg, #FB923C, var(--secondary));
+  box-shadow: 0 8px 18px rgba(249, 115, 22, 0.35);
 }
 
 .feature__icon svg {
+  width: 22px;
+  height: 22px;
   color: #fff;
 }
 
@@ -1083,7 +1097,10 @@ body.no-scroll {
   color: #0b2040;
   font-weight: 700;
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 /* .feature__desc removido por não haver uso no markup */
@@ -1099,7 +1116,26 @@ body.no-scroll {
 
   .features {
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 16px;
+  }
+
+  .feature {
+    gap: 10px;
+    padding: 20px 14px 18px;
+  }
+
+  .feature__icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .feature__icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .feature__title {
+    font-size: 0.95rem;
   }
 
   .hero__content {
