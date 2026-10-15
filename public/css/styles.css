@@ -1698,44 +1698,45 @@ body.no-scroll {
 
 /* Header estilizado do Kit */
 .perks-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 4px 4px 18px;
+  padding: 0 2px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  margin-bottom: 18px;
-}
-
-.perks-header__icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--secondary), #EA580C);
-  color: #0b2040;
-  box-shadow: 0 10px 24px rgba(249, 115, 22, 0.35);
-  flex: 0 0 60px;
-}
-
-.perks-header__icon svg {
-  width: 30px;
-  height: 30px;
-  stroke-width: 2.2;
+  margin-bottom: 16px;
 }
 
 .perks-header__text {
-  flex: 1;
   min-width: 0;
 }
 
 .perks-header__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: #fff;
-  margin: 0 0 8px;
-  font-size: 1.55rem;
+  margin: 0 0 6px;
+  font-size: 1.5rem;
   font-weight: 900;
   letter-spacing: 0.2px;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Ícone pequeno de bicicleta embutido no título. Antes era um bloco laranja
+   de 60x60 ao lado do texto — no celular ele empilhava ACIMA do título
+   (o header virava coluna) e gastava bastante altura sem acrescentar nada. */
+.perks-header__icon {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--secondary), #EA580C);
+  color: #0b2040;
+  box-shadow: 0 6px 14px rgba(249, 115, 22, 0.32);
+}
+
+.perks-header__icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .perks-header__subtitle {
@@ -1743,9 +1744,9 @@ body.no-scroll {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   color: rgba(255, 255, 255, 0.88);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 500;
 }
 
@@ -1753,27 +1754,19 @@ body.no-scroll {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: rgba(249, 115, 22, 0.18);
   border: 1px solid rgba(249, 115, 22, 0.35);
   color: var(--secondary);
   font-weight: 800;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   white-space: nowrap;
 }
 
 .perks-header__badge svg {
   color: var(--secondary);
   filter: drop-shadow(0 1px 3px rgba(249, 115, 22, 0.4));
-}
-
-.perks-header__divider {
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
 }
 
 .perks-header__tag {
@@ -1965,25 +1958,28 @@ body.no-scroll {
   }
 
   .perks-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .perks-header__icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    flex: 0 0 52px;
-  }
-
-  .perks-header__icon svg {
-    width: 26px;
-    height: 26px;
+    padding: 0 2px 12px;
+    margin-bottom: 14px;
   }
 
   .perks-header__title {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
+    gap: 8px;
+  }
+
+  .perks-header__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+
+  .perks-header__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .perks-header__subtitle {
+    font-size: 0.82rem;
   }
 
   .perks-list li {
