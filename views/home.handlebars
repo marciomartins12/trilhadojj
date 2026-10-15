@@ -1,0 +1,764 @@
+<section id="inicio" class="hero">
+  <div class="hero__content">
+    <h1 class="hero__title">
+      Trilha do <span class="highlight">JJ</span>
+    </h1>
+    <p class="hero__subtitle">{{subtitle}}</p>
+    <p class="hero__description">{{description}}</p>
+
+    <div class="hero__actions">
+      <a href="/inscricao" class="btn btn--primary">Inscreva-se Agora <span class="arrow">→</span></a>
+      <a href="#detalhes" class="btn btn--secondary">Saiba Mais</a>
+    </div>
+
+
+  </div>
+</section>
+<div class="section-divider" aria-hidden="true"></div>
+
+<section id="detalhes" class="section details">
+  <div class="section__header">
+    <h2 class="section__title">Sobre a Trilha do JJ</h2>
+    <span class="section__divider" aria-hidden="true"></span>
+  </div>
+
+
+  <div class="about__card">
+    <div class="section__content">
+      <p>No dia <strong>13 de dezembro de 2026</strong> acontecerá a <strong>6ª edição da Trilha do JJ</strong> na cidade de <strong>Pinheiro/MA</strong>, organizada pela <strong>Associação Pinheirense de Ciclismo (ASPC)</strong>. <br>
+        Esta trilha presta importante homenagem ao Ciclista <strong>Josias Martins</strong>, um dos pioneiros e grande incentivador do ciclismo em nossa cidade, que infelizmente foi vitimado pelo COVID-19. <br>
+        O principal objetivo deste evento é manter viva a memória de Josias e reunir ciclistas da cidade, região da Baixada e todo o estado para um agradável percurso, culminando com uma <strong>confraternização.</strong> 🌞🚴</p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+            </path>
+          </svg>
+        </div>
+        <h3 class="feature__title">Espírito de Equipe</h3>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 20l7-12 4 7 3-5 4 10z"></path>
+          </svg>
+        </div>
+        <h3 class="feature__title">Desafio Constante</h3>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="5.5" cy="17.5" r="3.5"></circle>
+            <circle cx="18.5" cy="17.5" r="3.5"></circle>
+            <path d="M5.5 17.5 9 9h4l2 4h3"></path>
+            <path d="M9 9 7 6"></path>
+          </svg>
+        </div>
+        <h3 class="feature__title">Pura Adrenalina</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="details__grid">
+    <div class="details__map-card">
+      <h3 class="details__subtitle">Mapa do Percurso</h3>
+      <div class="details__map">
+        <div class="video-preview" id="mapVideoPreview" aria-label="Prévia do vídeo do mapa do percurso">
+          <picture>
+            <source srcset="/public/img/rota.webp" type="image/webp" />
+            <img src="/public/img/rota.png" alt="Preview do vídeo do mapa do percurso" class="video-preview__image" />
+          </picture>
+          <button type="button" class="video-preview__play" aria-label="Assistir vídeo do mapa">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="currentColor"
+              aria-hidden="true">
+              <path d="M8 5v14l11-7z"></path>
+            </svg>
+          </button>
+        </div>
+        <img src="/public/img/peixefundo.png" alt="" aria-hidden="true" class="details__map-overlay" />
+      </div>
+    </div>
+
+    <div class="details__stats">
+      <div class="stat">
+        <span class="stat__label">Distância</span>
+        <span class="stat__value">{{distance}}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Tipo</span>
+        <span class="stat__value">{{tipo}}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Tempo Médio</span>
+        <span class="stat__value">{{tempoMedio}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="details__perks">
+    <div class="perks-header">
+      <div class="perks-header__icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5A2.5 2.5 0 0 1 4.5 2h15A2.5 2.5 0 0 1 22 4.5 2.5 2.5 0 0 1 19.5 7H18"></path>
+          <path d="M6 2v6a4 4 0 0 0 8 0V6"></path>
+          <path d="M6 10v4a4 4 0 0 0 8 0v-4"></path>
+          <path d="M6 18v2"></path>
+          <path d="M10 18v2"></path>
+          <path d="M14 18v2"></path>
+          <path d="M18 18v2"></path>
+        </svg>
+      </div>
+      <div class="perks-header__text">
+        <h3 class="details__subtitle perks-header__title">Kit Ciclista Completo</h3>
+        <p class="perks-header__subtitle">
+          <span class="perks-header__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/>
+            </svg>
+            <span id="perksCount">+6 itens exclusivos</span>
+          </span>
+          <span class="perks-header__divider" aria-hidden="true"></span>
+          <span class="perks-header__tag">Tudo incluso na sua inscrição</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Medalha interativa: frente = parte1daFrente sobre partedoMeio; verso = partedetras (fundo) + partedoMeio + parte1dacosta -->
+    <div class="medal" id="medalShowcase" style="--spin: 0deg;">
+      <div class="medal__stage" id="medalStage" role="group"
+        aria-label="Medalha da Trilha do JJ. Arraste para girar e use o botão para ver o verso.">
+        <div class="medal__flipper" id="medalFlipper">
+          <div class="medal__face medal__face--front">
+            <picture class="medal__layer medal__layer--middle">
+              <source srcset="/public/img/partedoMeio.webp" type="image/webp" />
+              <img src="/public/img/partedoMeio.png" alt="" aria-hidden="true" draggable="false" loading="lazy"
+                decoding="async" />
+            </picture>
+            <picture class="medal__layer medal__layer--top">
+              <source srcset="/public/img/parte1daFrente.webp" type="image/webp" />
+              <img src="/public/img/parte1daFrente.png" alt="Medalha da Trilha do JJ — frente" draggable="false"
+                loading="lazy" decoding="async" />
+            </picture>
+          </div>
+          <div class="medal__face medal__face--back">
+            <picture class="medal__layer medal__layer--bg">
+              <source srcset="/public/img/parte1dacosta.webp" type="image/webp" />
+              <img src="/public/img/parte1dacosta.png" alt="Medalha da Trilha do JJ — verso" draggable="false"
+                loading="lazy" decoding="async" />
+            </picture>
+            <picture class="medal__layer medal__layer--middle">
+              <source srcset="/public/img/partedoMeio.webp" type="image/webp" />
+              <img src="/public/img/partedoMeio.png" alt="" aria-hidden="true" draggable="false" loading="lazy"
+                decoding="async" />
+            </picture>
+            <picture class="medal__layer medal__layer--top">
+              <source srcset="/public/img/partedeTras.webp" type="image/webp" />
+              <img src="/public/img/partedeTras.png" alt="" aria-hidden="true" draggable="false" loading="lazy"
+                decoding="async" />
+            </picture>
+          </div>
+        </div>
+      </div>
+      <div class="medal__actions">
+        <button type="button" class="btn btn--primary medal__flip" id="medalFlipBtn"
+          aria-pressed="false">Virar medalha</button>
+        <span class="medal__hint">Arraste a medalha para girar</span>
+      </div>
+    </div>
+
+    <ul class="perks-list is-collapsed" id="perksList">
+      <li>
+        <span class="perk__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+            <path d="M2 13h16"></path>
+          </svg>
+        </span>
+        <span class="perk__text" title="Café da manhã e almoço inclusos">Café da manhã e almoço</span>
+      </li>
+      <li>
+        <span class="perk__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12c2 -2 4 -2 6 0s4 2 6 0 4-2 6 0"></path>
+            <path d="M2 18c2 -2 4 -2 6 0s4 2 6 0 4-2 6 0"></path>
+            <path d="M7 6a5 5 0 0 1 10 0c0 2-3 4-5 6-2-2-5-4-5-6z"></path>
+          </svg>
+        </span>
+        <span class="perk__text" title="Piscina liberada para uso durante o evento">Piscina liberada</span>
+      </li>
+      <li>
+        <span class="perk__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="6"></circle>
+            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+          </svg>
+        </span>
+        <span class="perk__text" title="Medalha de participação para atletas">Medalha</span>
+      </li>
+      <li>
+        <span class="perk__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="10" rx="2" ry="2"></rect>
+            <circle cx="7" cy="17" r="2"></circle>
+            <circle cx="17" cy="17" r="2"></circle>
+            <path d="M7 9h.01"></path>
+            <path d="M11 9h4"></path>
+          </svg>
+        </span>
+        <span class="perk__text" title="Placa numerada para identificação da bicicleta">Placa numerada para a bike</span>
+      </li>
+      <li>
+        <span class="perk__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 11V7a5 5 0 0 0-10 0v4"></path>
+            <rect x="7" y="11" width="10" height="10" rx="2"></rect>
+          </svg>
+        </span>
+        <span class="perk__text" title="Pulseira de identificação pessoal">Pulseira de identificação</span>
+      </li>
+      <li>
+        <span class="perk__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+            <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+            <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+          </svg>
+        </span>
+        <span class="perk__text" title="Participação em sorteios de brindes">Participação em sorteios</span>
+      </li>
+
+    </ul>
+    <div class="perks-actions" id="perksActions">
+      <button type="button" class="btn btn--primary perks__toggle-more" data-perks-action="expand">Exibir todos</button>
+      <button type="button" class="btn btn--primary perks__toggle-less" data-perks-action="collapse"
+        aria-hidden="true">Fechar</button>
+    </div>
+    <p class="perks-note" style="margin-top: 16px; font-size: 0.92rem; color: rgba(255,255,255,0.78); line-height: 1.55;">
+      <strong style="color: var(--secondary);">Observação:</strong>
+      Acompanhante não recebe medalha, não recebe placa para bike e não participa dos sorteios.
+    </p>
+  </div>
+</section>
+<a href="{{whatsappGroupUrl}}" target="_blank" rel="noopener" class="floating-wa"
+  aria-label="Entrar no grupo do WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+    aria-hidden="true">
+    <path
+      d="M17.472 14.382c-.297-.149-1.758-.867-2.031-.964-.273-.099-.472-.148-.671.149-.198.297-.769.964-.943 1.162-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.474-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.173.198-.298.297-.496.099-.199.05-.372-.025-.521-.074-.149-.671-1.618-.92-2.219-.242-.582-.487-.503-.671-.511-.173-.008-.372-.01-.571-.01-.198 0-.521.074-.794.372-.273.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.879 1.213 3.078.149.198 2.099 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.718 2.006-1.412.248-.694.248-1.289.173-1.412-.074-.123-.272-.198-.57-.347z" />
+    <path
+      d="M12.004 2.003c-5.514 0-10 4.486-10 10 0 1.768.469 3.424 1.284 4.858L2 22l5.253-1.378c1.387.751 2.966 1.18 4.751 1.18 5.514 0 10-4.486 10-10s-4.486-10-10-10zm0 18.197c-1.579 0-3.052-.43-4.318-1.175l-.309-.184-3.115.817.832-3.039-.201-.312c-.774-1.235-1.223-2.691-1.223-4.204 0-4.422 3.596-8.018 8.018-8.018 4.422 0 8.018 3.596 8.018 8.018 0 4.422-3.596 8.018-8.018 8.018z" />
+  </svg>
+
+</a>
+<script>
+  (function () {
+    const list = document.getElementById('perksList');
+    const actions = document.getElementById('perksActions');
+    if (!list || !actions) return;
+
+    const expandBtn = actions.querySelector('[data-perks-action="expand"]');
+    const collapseBtn = actions.querySelector('[data-perks-action="collapse"]');
+    const countEl = document.getElementById('perksCount');
+    const totalItems = list.querySelectorAll('li').length;
+    if (countEl && totalItems) {
+      countEl.textContent = `+${totalItems} itens exclusivos`;
+    }
+
+    function isMobile() {
+      return window.matchMedia('(max-width: 767px)').matches;
+    }
+
+    function setCollapsed() {
+      list.classList.add('is-collapsed');
+      list.classList.remove('is-expanded');
+      expandBtn?.removeAttribute('aria-hidden');
+      collapseBtn?.setAttribute('aria-hidden', 'true');
+    }
+
+    function setExpanded() {
+      list.classList.remove('is-collapsed');
+      list.classList.add('is-expanded');
+      expandBtn?.setAttribute('aria-hidden', 'true');
+      collapseBtn?.removeAttribute('aria-hidden');
+    }
+
+    function syncStateOnResize() {
+      if (isMobile()) {
+        if (!list.classList.contains('is-expanded')) setCollapsed();
+        actions.style.display = '';
+      } else {
+        list.classList.remove('is-collapsed');
+        list.classList.add('is-expanded');
+        actions.style.display = 'none';
+      }
+    }
+
+    expandBtn?.addEventListener('click', function () {
+      if (!isMobile()) return;
+      setExpanded();
+      const items = list.querySelectorAll('li');
+      if (items[4]) items[4].focus?.();
+    });
+    collapseBtn?.addEventListener('click', function () {
+      if (!isMobile()) return;
+      setCollapsed();
+      expandBtn.focus?.();
+    });
+
+    window.addEventListener('resize', syncStateOnResize);
+    syncStateOnResize();
+  })();
+</script>
+<script>
+  (function () {
+    const root = document.getElementById('medalShowcase');
+    const stage = document.getElementById('medalStage');
+    const flipper = document.getElementById('medalFlipper');
+    const flipBtn = document.getElementById('medalFlipBtn');
+    if (!root || !stage || !flipper) return;
+
+    const TURN_DEG = 360;          // giro (volta completa) conforme a medalha atravessa a viewport
+    const DRAG_SENSITIVITY = 0.65; // graus por pixel arrastado
+    const DRAG_THRESHOLD = 5;      // px para decidir a direção do gesto (horizontal x vertical)
+    const FRICTION = 0.94;         // atrito da inércia (0..1)
+    const MIN_VELOCITY = 0.05;     // abaixo disso, para
+
+    let manualSpin = 0;   // giro acumulado pelo arraste + inércia
+    let velocity = 0;     // graus por frame (para a inércia)
+    let dragging = false;
+    let gestureAxis = null; // null | 'x' (girar) | 'y' (rolar a página)
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let inertiaRaf = null;
+
+    let inView = false;       // a medalha está (perto de estar) visível?
+    let loopRaf = null;       // id do loop de render
+    let lastApplied = null;   // último valor aplicado (evita escritas repetidas)
+
+    // Progresso (0..1) conforme a medalha atravessa a viewport
+    function progress() {
+      const rect = stage.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      const total = vh + rect.height;
+      if (total <= 0) return 0;
+      const p = (vh - rect.top) / total;
+      return p < 0 ? 0 : (p > 1 ? 1 : p);
+    }
+
+    // Desenha o giro: posição do scroll + giro manual (arraste/inércia).
+    // Roda em loop de requestAnimationFrame enquanto a medalha está visível.
+    // NÃO usamos o evento "scroll" porque nesta página o scroll acontece no
+    // <body> (por causa de "html, body { height:100% }"), e esse evento não
+    // chega ao window — era isso que deixava a medalha parada ao rolar.
+    function render() {
+      const p = progress();
+      const total = (p - 0.5) * TURN_DEG + manualSpin;
+      const value = total.toFixed(2) + 'deg';
+      if (value !== lastApplied) {
+        lastApplied = value;
+        root.style.setProperty('--spin', value);
+      }
+      if (inView) {
+        loopRaf = requestAnimationFrame(render);
+      } else {
+        loopRaf = null;
+      }
+    }
+
+    function startLoop() {
+      if (loopRaf == null) loopRaf = requestAnimationFrame(render);
+    }
+
+    function stopLoop() {
+      if (loopRaf != null) { cancelAnimationFrame(loopRaf); loopRaf = null; }
+    }
+
+    // Liga/desliga o loop conforme a medalha entra/sai da tela (economiza CPU/bateria)
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(function (entries) {
+        for (let i = 0; i < entries.length; i++) inView = entries[i].isIntersecting;
+        if (inView) startLoop(); else stopLoop();
+      }, { rootMargin: '200px 0px' });
+      io.observe(stage);
+    } else {
+      inView = true;
+      startLoop();
+    }
+
+    // Continua girando após soltar (efeito de "roda")
+    function inertia() {
+      if (dragging) { inertiaRaf = null; return; }
+      manualSpin += velocity;
+      velocity *= FRICTION;
+      startLoop();
+      if (Math.abs(velocity) > MIN_VELOCITY) {
+        inertiaRaf = requestAnimationFrame(inertia);
+      } else {
+        velocity = 0;
+        inertiaRaf = null;
+      }
+    }
+
+    function onDown(e) {
+      if (e.pointerType === 'mouse' && e.button != null && e.button !== 0) return;
+      dragging = true;
+      gestureAxis = null;
+      velocity = 0;
+      startX = e.clientX;
+      startY = e.clientY;
+      lastX = e.clientX;
+      if (inertiaRaf != null) { cancelAnimationFrame(inertiaRaf); inertiaRaf = null; }
+      stage.classList.add('is-dragging');
+      try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+      startLoop();
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+
+      // Primeiro movimento: decide se o gesto é girar (horizontal) ou rolar a página (vertical).
+      if (gestureAxis === null) {
+        const totalDx = e.clientX - startX;
+        const totalDy = e.clientY - startY;
+        if (Math.hypot(totalDx, totalDy) < DRAG_THRESHOLD) return; // ainda não deu para decidir
+        gestureAxis = Math.abs(totalDx) >= Math.abs(totalDy) ? 'x' : 'y';
+        // Se o gesto é vertical, solta o controle para a página rolar normalmente (sem girar).
+        if (gestureAxis === 'y') {
+          dragging = false;
+          stage.classList.remove('is-dragging');
+          try { if (e.pointerId != null) stage.releasePointerCapture(e.pointerId); } catch (_) {}
+          return;
+        }
+        lastX = e.clientX; // evita um "pulo" no primeiro frame
+      }
+
+      if (gestureAxis !== 'x') return; // gesto vertical: deixa a página rolar
+
+      const dx = e.clientX - lastX;
+      lastX = e.clientX;
+      const deg = dx * DRAG_SENSITIVITY;
+      manualSpin += deg;
+      // Suaviza a velocidade (média) para a inércia não ficar "nervosa"
+      velocity = velocity * 0.6 + deg * 0.4;
+      startLoop();
+    }
+
+    function onUp(e) {
+      if (!dragging) return;
+      const wasRotating = gestureAxis === 'x';
+      dragging = false;
+      gestureAxis = null;
+      stage.classList.remove('is-dragging');
+      try { if (e && e.pointerId != null) stage.releasePointerCapture(e.pointerId); } catch (_) {}
+      if (wasRotating && Math.abs(velocity) > MIN_VELOCITY) {
+        if (inertiaRaf != null) cancelAnimationFrame(inertiaRaf);
+        inertiaRaf = requestAnimationFrame(inertia);
+      } else {
+        velocity = 0;
+      }
+    }
+
+    stage.addEventListener('pointerdown', onDown);
+    stage.addEventListener('pointermove', onMove);
+    stage.addEventListener('pointerup', onUp);
+    stage.addEventListener('pointercancel', onUp);
+    stage.addEventListener('lostpointercapture', onUp);
+    stage.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    // Reforço: qualquer scroll/resize garante o loop ligado.
+    // O listener vai no documento em FASE DE CAPTURA, então também pega o scroll
+    // disparado pelo <body> (o listener no window sozinho não captura nesta página).
+    document.addEventListener('scroll', startLoop, { passive: true, capture: true });
+    window.addEventListener('resize', startLoop);
+
+    // Botão de virar a medalha (frente <-> verso)
+    if (flipBtn) {
+      flipBtn.addEventListener('click', function () {
+        const flipped = flipper.classList.toggle('is-flipped');
+        flipBtn.setAttribute('aria-pressed', flipped ? 'true' : 'false');
+        flipBtn.textContent = flipped ? 'Voltar para frente' : 'Virar medalha';
+      });
+    }
+
+    // Primeira pintura imediata (o loop contínuo cuida das próximas atualizações)
+    render();
+  })();
+</script>
+<script>
+  (function () {
+    const preview = document.getElementById('mapVideoPreview');
+    if (!preview) return;
+    const playBtn = preview.querySelector('.video-preview__play');
+    playBtn?.addEventListener('click', function () {
+      const video = document.createElement('video');
+      video.className = 'details__map-image';
+      video.controls = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.preload = 'none';
+      const source = document.createElement('source');
+      source.src = '/public/img/videoRota.mp4';
+      source.type = 'video/mp4';
+      video.appendChild(source);
+      preview.replaceWith(video);
+      video.play?.().catch(() => { });
+    });
+  })();
+</script>
+<div class="section-divider" aria-hidden="true"></div>
+<section id="inscricao" class="section cta">
+  <div class="cta__content">
+    <h2 class="cta__title">Pronto para a Aventura?</h2>
+    <p class="cta__text">
+      Não perca a oportunidade de fazer parte deste evento incrível.
+      Garanta sua vaga agora e prepare-se para pedalar com a Trilha do JJ!
+    </p>
+    <div class="cta__actions">
+      <a href="/inscricao" class="btn btn--primary btn--cta">Fazer Inscrição <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+<div class="section-divider" aria-hidden="true"></div>
+<section id="baixar-card" class="section cta">
+  <div class="cta__bg-icons" aria-hidden="true"></div>
+
+  <div class="cta__content">
+
+
+
+    <h2 class="cta__title">Card de Identificação (avatar)</h2>
+
+    <div class="cta__preview" aria-label="Prévia do card de identificação (avatar)">
+      <img src="/public/img/modeloPraExibir%20NoCardDeBaixar.png" alt="Modelo de card de identificação (avatar)"
+        class="cta__preview-image" loading="lazy" fetchpriority="low" />
+      <p class="cta__preview-caption">Exemplo de como ficará seu card de identificação</p>
+    </div>
+    <div class="cta__actions">
+      <form id="cpf-inline-form" class="cpf-form" novalidate>
+        <p id="cpf-inline-error" class="alert alert--error hidden" aria-live="polite"></p>
+        <label for="cpf-inline-input" class="sr-only">CPF</label>
+        <div class="cpf-form__row">
+          <input type="text" id="cpf-inline-input" name="cpf" class="cpf-input" placeholder="000.000.000-00"
+            inputmode="numeric" autocomplete="off" maxlength="14" aria-describedby="cpf-inline-error" />
+          <button type="submit" class="btn btn--primary btn--cta">Buscar Card <span class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<div class="section-divider" aria-hidden="true"></div>
+<section id="pagamento-pendente" class="section cta">
+  <div class="cta__content">
+    <h2 class="cta__title">Já se inscreveu e não pagou?</h2>
+    <p class="cta__text">Informe seu CPF para acessar seu QR Code PIX e finalizar.</p>
+    <div class="cta__actions">
+      <form id="cpf-pay-form" class="cpf-form" novalidate>
+        <p id="cpf-pay-error" class="alert alert--error hidden" aria-live="polite"></p>
+        <label for="cpf-pay-input" class="sr-only">CPF</label>
+        <div class="cpf-form__row">
+          <input type="text" id="cpf-pay-input" name="cpf" class="cpf-input" placeholder="000.000.000-00"
+            inputmode="numeric" autocomplete="off" maxlength="14" aria-describedby="cpf-pay-error" />
+          <button type="submit" class="btn btn--primary btn--cta">Continuar Pagamento <span
+              class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+  (function () {
+    const form = document.getElementById('cpf-inline-form');
+    const input = document.getElementById('cpf-inline-input');
+    const errorEl = document.getElementById('cpf-inline-error');
+
+    function onlyDigits(str) { return String(str || '').replace(/\D/g, ''); }
+    function formatCpf(digits) {
+      const d = onlyDigits(digits).slice(0, 11);
+      const parts = [];
+      if (d.length > 0) parts.push(d.substring(0, 3));
+      if (d.length > 3) parts.push(d.substring(3, 6));
+      if (d.length > 6) parts.push(d.substring(6, 9));
+      const base = parts.join('.');
+      if (d.length > 9) return `${base}-${d.substring(9, 11)}`;
+      return base;
+    }
+    function isValidCPF(raw) {
+      const cpf = onlyDigits(raw);
+      if (!cpf || cpf.length !== 11) return false;
+      if (/^(\d)\1{10}$/.test(cpf)) return false;
+      let sum = 0;
+      for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i), 10) * (10 - i);
+      let first = (sum * 10) % 11; if (first === 10) first = 0;
+      if (first !== parseInt(cpf.charAt(9), 10)) return false;
+      sum = 0;
+      for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i), 10) * (11 - i);
+      let second = (sum * 10) % 11; if (second === 10) second = 0;
+      if (second !== parseInt(cpf.charAt(10), 10)) return false;
+      return true;
+    }
+
+    input?.addEventListener('input', () => {
+      const digits = onlyDigits(input.value);
+      input.value = formatCpf(digits);
+      // manter o cursor no final para evitar saltos indesejados
+      try { input.setSelectionRange(input.value.length, input.value.length); } catch (_) { }
+      if (!errorEl.classList.contains('hidden')) errorEl.classList.add('hidden');
+    });
+    input?.addEventListener('paste', (e) => {
+      const cd = e.clipboardData || window.clipboardData;
+      // Se temos acesso ao clipboard, tratamos manualmente; caso contrário, deixamos o comportamento padrão
+      if (cd && typeof cd.getData === 'function') {
+        e.preventDefault();
+        const txt = cd.getData('text');
+        const digits = onlyDigits(txt).slice(0, 11);
+        input.value = formatCpf(digits);
+        try { input.setSelectionRange(input.value.length, input.value.length); } catch (_) { }
+      }
+    });
+    // Removido o bloqueio de teclas para maximizar compatibilidade de colagem
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const raw = input?.value || '';
+      const cpfDigits = onlyDigits(raw);
+      if (!isValidCPF(cpfDigits)) {
+        errorEl.textContent = 'CPF inválido.';
+        errorEl.classList.remove('hidden');
+        input?.focus?.();
+        return;
+      }
+      try {
+        const resp = await fetch('/inscricao/consulta-cpf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cpf: cpfDigits })
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          window.showPopup('Erro na consulta de CPF', data?.error || 'Falha na consulta de CPF', 'error');
+          return;
+        }
+        if (!data?.found) {
+          window.showToast('Você ainda não está inscrito. Indo para a inscrição…', 'info');
+          window.location.href = '/inscricao';
+          return;
+        }
+        if (data.paymentStatus === 'pending') {
+          window.location.href = `/inscricao/pagamento/${data.id}`;
+        } else {
+          window.location.href = `/inscricao/card/${data.id}`;
+        }
+      } catch (e) {
+        window.showPopup('Erro ao consultar CPF', 'Tente novamente em alguns instantes.', 'error');
+      }
+    });
+  })();
+</script>
+
+
+<div class="section-divider" aria-hidden="true"></div>
+<script>
+  (function () {
+    const form = document.getElementById('cpf-pay-form');
+    const input = document.getElementById('cpf-pay-input');
+    const errorEl = document.getElementById('cpf-pay-error');
+    function onlyDigits(str) { return String(str || '').replace(/\D/g, ''); }
+    function formatCpf(digits) {
+      const d = onlyDigits(digits).slice(0, 11);
+      const parts = [];
+      if (d.length > 0) parts.push(d.substring(0, 3));
+      if (d.length > 3) parts.push(d.substring(3, 6));
+      if (d.length > 6) parts.push(d.substring(6, 9));
+      const base = parts.join('.');
+      if (d.length > 9) return `${base}-${d.substring(9, 11)}`;
+      return base;
+    }
+    function isValidCPF(raw) {
+      const cpf = onlyDigits(raw);
+      if (!cpf || cpf.length !== 11) return false;
+      if (/^(\d)\1{10}$/.test(cpf)) return false;
+      let sum = 0;
+      for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i), 10) * (10 - i);
+      let first = (sum * 10) % 11; if (first === 10) first = 0;
+      if (first !== parseInt(cpf.charAt(9), 10)) return false;
+      sum = 0;
+      for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i), 10) * (11 - i);
+      let second = (sum * 10) % 11; if (second === 10) second = 0;
+      if (second !== parseInt(cpf.charAt(10), 10)) return false;
+      return true;
+    }
+    input?.addEventListener('input', () => {
+      const digits = onlyDigits(input.value);
+      input.value = formatCpf(digits);
+      try { input.setSelectionRange(input.value.length, input.value.length); } catch (_) { }
+      if (!errorEl.classList.contains('hidden')) errorEl.classList.add('hidden');
+    });
+    input?.addEventListener('paste', (e) => {
+      const cd = e.clipboardData || window.clipboardData;
+      if (cd && typeof cd.getData === 'function') {
+        e.preventDefault();
+        const txt = cd.getData('text');
+        const digits = onlyDigits(txt).slice(0, 11);
+        input.value = formatCpf(digits);
+        try { input.setSelectionRange(input.value.length, input.value.length); } catch (_) { }
+      }
+    });
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const raw = input?.value || '';
+      const cpfDigits = onlyDigits(raw);
+      if (!isValidCPF(cpfDigits)) {
+        errorEl.textContent = 'CPF inválido.';
+        errorEl.classList.remove('hidden');
+        input?.focus?.();
+        return;
+      }
+      try {
+        const resp = await fetch('/inscricao/consulta-cpf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cpf: cpfDigits })
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          window.showPopup('Erro na consulta de CPF', data?.error || 'Falha na consulta de CPF', 'error');
+          return;
+        }
+        if (!data?.found) {
+          window.showToast('CPF não encontrado. Faça sua inscrição.', 'info');
+          window.location.href = '/inscricao';
+          return;
+        }
+        if (data.paymentStatus === 'pending') {
+          window.location.href = `/inscricao/pagamento/${data.id}`;
+        } else {
+          window.location.href = `/inscricao/card/${data.id}`;
+        }
+      } catch (e) {
+        window.showPopup('Erro ao consultar CPF', 'Tente novamente em alguns instantes.', 'error');
+      }
+    });
+  })();
+</script>
