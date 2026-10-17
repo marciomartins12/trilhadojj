@@ -25,11 +25,15 @@ try {
 const fs = require('fs');
 const crypto = require('crypto');
 
+// Resolve o arquivo real de um asset referenciado como /public/...
+function resolveAssetFile(assetPath) {
+  const clean = String(assetPath || '').replace(/^\/+/, '');
+  return path.join(__dirname, '..', clean);
+}
+
 function computeAssetVersion(assetPath) {
   try {
-    const absolute = assetPath.startsWith('/')
-      ? path.join(__dirname, '..', assetPath)
-      : assetPath;
+    const absolute = resolveAssetFile(assetPath);
     if (!fs.existsSync(absolute)) return Date.now().toString(36);
     const stat = fs.statSync(absolute);
     const raw = fs.readFileSync(absolute);
@@ -42,15 +46,28 @@ function computeAssetVersion(assetPath) {
   }
 }
 const isDev = String(process.env.NODE_ENV || 'development').toLowerCase().startsWith('dev');
+// Cache do hash em produção. Junto do hash guardamos a "assinatura" do arquivo
+// (mtime + tamanho): quando a imagem é substituída a assinatura muda e o hash é
+// recalculado já na próxima requisição — não depende de reiniciar o PM2.
 const _assetCache = new Map();
+function assetFileSignature(assetPath) {
+  try {
+    const stat = fs.statSync(resolveAssetFile(assetPath));
+    return `${stat.mtimeMs}-${stat.size}`;
+  } catch (_) {
+    return null;
+  }
+}
 function assetVersion(assetPath) {
   if (isDev) {
     return computeAssetVersion(assetPath);
   }
-  if (_assetCache.has(assetPath)) return _assetCache.get(assetPath);
-  const v = computeAssetVersion(assetPath);
-  _assetCache.set(assetPath, v);
-  return v;
+  const sig = assetFileSignature(assetPath);
+  const cached = _assetCache.get(assetPath);
+  if (cached && sig && cached.sig === sig) return cached.version;
+  const version = computeAssetVersion(assetPath);
+  _assetCache.set(assetPath, { sig, version });
+  return version;
 }
 function assetUrl(assetPath) {
   if (!assetPath) return '';
@@ -77,20 +94,40 @@ if (compression) {
   }));
 }
 
-// Static files com cache agressivo para recursos imutáveis (imagens, CSS, JS, fontes)
+// Static files. O cache longo (1 ano, immutable) SÓ é aplicado quando a URL traz
+// ?v=<hash do arquivo> — que é o que o helper {{asset}} gera. Sem esse parâmetro
+// (ou com um hash antigo, caso das imagens usadas em url() dentro do CSS),
+// servimos "no-cache": o navegador revalida pelo ETag e recebe a versão nova
+// assim que o arquivo muda, mesmo em aparelhos que já tinham a imagem antiga.
 const oneYear = 60 * 60 * 24 * 365 * 1000;
 const staticDir = path.join(__dirname, '..', 'public');
+const projectRoot = path.join(__dirname, '..');
+
+// Disponibiliza o ?v= pedido para o setHeaders do express.static
+app.use('/public', (req, res, next) => {
+  res.locals.assetRequestedVersion = typeof req.query.v === 'string' ? req.query.v : null;
+  next();
+});
+
 app.use('/public', express.static(staticDir, {
   maxAge: oneYear,
   immutable: true,
   etag: true,
   lastModified: true,
-  setHeaders: (res, filePath, stat) => {
+  setHeaders: (res, filePath) => {
     const ext = path.extname(filePath).toLowerCase();
     if (isDev) {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+      return;
+    }
+    const relKey = path.relative(projectRoot, filePath).split(path.sep).join('/');
+    const requested = res.locals?.assetRequestedVersion;
+    const versaoConfere = !!requested && requested === assetVersion(relKey);
+    if (!versaoConfere) {
+      // Sem versão (ex.: url() dentro do CSS) ou versão desatualizada → revalida sempre.
+      res.setHeader('Cache-Control', 'no-cache');
       return;
     }
     if (['.webp', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.mp4', '.webm', '.woff2', '.woff', '.ttf', '.otf'].includes(ext)) {

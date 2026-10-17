@@ -141,30 +141,30 @@
         <div class="medal__flipper" id="medalFlipper">
           <div class="medal__face medal__face--front">
             <picture class="medal__layer medal__layer--middle">
-              <source srcset="/public/img/partedoMeio.webp" type="image/webp" />
-              <img src="/public/img/partedoMeio.png" alt="" aria-hidden="true" draggable="false" loading="lazy"
+              <source srcset="{{asset '/public/img/partedoMeio.webp'}}" type="image/webp" />
+              <img src="{{asset '/public/img/partedoMeio.png'}}" alt="" aria-hidden="true" draggable="false" loading="lazy"
                 decoding="async" />
             </picture>
             <picture class="medal__layer medal__layer--top">
-              <source srcset="/public/img/parte1daFrente.webp" type="image/webp" />
-              <img src="/public/img/parte1daFrente.png" alt="Medalha da Trilha do JJ — frente" draggable="false"
+              <source srcset="{{asset '/public/img/parte1daFrente.webp'}}" type="image/webp" />
+              <img src="{{asset '/public/img/parte1daFrente.png'}}" alt="Medalha da Trilha do JJ — frente" draggable="false"
                 loading="lazy" decoding="async" />
             </picture>
           </div>
           <div class="medal__face medal__face--back">
             <picture class="medal__layer medal__layer--bg">
-              <source srcset="/public/img/parte1dacosta.webp" type="image/webp" />
-              <img src="/public/img/parte1dacosta.png" alt="Medalha da Trilha do JJ — verso" draggable="false"
+              <source srcset="{{asset '/public/img/parte1dacosta.webp'}}" type="image/webp" />
+              <img src="{{asset '/public/img/parte1dacosta.png'}}" alt="Medalha da Trilha do JJ — verso" draggable="false"
                 loading="lazy" decoding="async" />
             </picture>
             <picture class="medal__layer medal__layer--middle">
-              <source srcset="/public/img/partedoMeio.webp" type="image/webp" />
-              <img src="/public/img/partedoMeio.png" alt="" aria-hidden="true" draggable="false" loading="lazy"
+              <source srcset="{{asset '/public/img/partedoMeio.webp'}}" type="image/webp" />
+              <img src="{{asset '/public/img/partedoMeio.png'}}" alt="" aria-hidden="true" draggable="false" loading="lazy"
                 decoding="async" />
             </picture>
             <picture class="medal__layer medal__layer--top">
-              <source srcset="/public/img/partedeTras.webp" type="image/webp" />
-              <img src="/public/img/partedeTras.png" alt="" aria-hidden="true" draggable="false" loading="lazy"
+              <source srcset="{{asset '/public/img/partedeTras.webp'}}" type="image/webp" />
+              <img src="{{asset '/public/img/partedeTras.png'}}" alt="" aria-hidden="true" draggable="false" loading="lazy"
                 decoding="async" />
             </picture>
           </div>
@@ -512,7 +512,7 @@
     <h2 class="cta__title">Card de Identificação (avatar)</h2>
 
     <div class="cta__preview" aria-label="Prévia do card de identificação (avatar)">
-      <img src="/public/img/modeloPraExibir%20NoCardDeBaixar.png" alt="Modelo de card de identificação (avatar)"
+      <img src="{{asset '/public/img/modeloPraExibir NoCardDeBaixar.png'}}" alt="Modelo de card de identificação (avatar)"
         class="cta__preview-image" loading="lazy" fetchpriority="low" />
       <p class="cta__preview-caption">Exemplo de como ficará seu card de identificação</p>
     </div>

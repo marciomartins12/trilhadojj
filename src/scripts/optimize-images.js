@@ -54,9 +54,14 @@ async function run() {
     const writtenOrig = fs.statSync(src).size;
     totalAfter += writtenOrig;
 
-    // Passo 2: Gerar versão WebP OTIMIZADA (se ainda não existir, ou target.force)
+    // Passo 2: Gerar versão WebP OTIMIZADA. Além de "não existe" e target.force,
+    // regenera quando o PNG/JPG de origem for mais NOVO que o WebP — senão, ao
+    // substituir a imagem original, o navegador continuaria recebendo o WebP antigo
+    // (o <picture> sempre prefere o .webp).
     const webpFile = path.join(imgDir, `${base}.webp`);
-    const needsWebp = target.force || !fs.existsSync(webpFile);
+    const webpExiste = fs.existsSync(webpFile);
+    const webpDesatualizado = webpExiste && fs.statSync(src).mtimeMs > fs.statSync(webpFile).mtimeMs;
+    const needsWebp = target.force || !webpExiste || webpDesatualizado;
     if (needsWebp) {
       let w = sharp(src).rotate();
       if (maxW && curW > maxW) w = w.resize({ width: maxW, withoutEnlargement: true });
