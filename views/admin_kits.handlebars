@@ -79,21 +79,21 @@
         {{#if regs.length}}
           {{#each regs}}
             <tr class="{{#if this.kitReceived}}kit-row--received{{else}}kit-row--pending{{/if}}">
-              <td class="cell--plate" style="text-align:center; font-weight:800; font-size:1.2rem;">
+              <td class="cell--plate" data-label="Placa" style="text-align:center; font-weight:800; font-size:1.2rem;">
                 {{this.paidOrderStr}}
               </td>
-              <td class="cell--name">
+              <td class="cell--name" data-label="Nome do Ciclista">
                 <div style="font-weight:600;">{{this.displayName}}</div>
                 {{#if this.displayNameSmall}}
                   <div style="font-size:0.75rem; opacity:.7; color:#d1c89c;">(no cartão: {{this.displayNameSmall}})</div>
                 {{/if}}
                 <div style="font-size:0.7rem; opacity:.65; margin-top:2px;">CPF: {{this.cpf}}</div>
               </td>
-              <td class="cell--city">
+              <td class="cell--city" data-label="Cidade / Grupo">
                 <div>{{this.city}}</div>
                 {{#if this.group}}<div style="font-size:.75rem; opacity:.7; margin-top:2px;">Grupo: {{this.group}}</div>{{/if}}
               </td>
-              <td class="cell--status">
+              <td class="cell--status" data-label="Status do Kit">
                 {{#if this.kitReceived}}
                   <div class="kit-status kit-status--received">
                     <div class="kit-status__badge">
@@ -121,7 +121,7 @@
                   </div>
                 {{/if}}
               </td>
-              <td>
+              <td class="cell--actions" data-label="Ações">
                 <div class="table-actions" style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
                   {{#unless this.kitReceived}}
                     <form method="POST" action="/admin/kits/{{this.id}}/recebido-proprio" style="display:inline;" data-confirm="Marcar kit placa {{this.paidOrderStr}} como RETIRADO PELO PRÓPRIO ATLETA?">

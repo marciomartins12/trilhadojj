@@ -494,8 +494,10 @@ body::before {
   border-color: rgba(234, 179, 8, 0.3);
 }
 
-/* Responsivo: esconder colunas extras no mobile */
-@media (max-width: 600px) {
+/* Responsivo: no tablet estreito escondemos as colunas menos importantes.
+   No celular (<=600px) a tabela inteira vira cartão (ver bloco ADMIN no fim
+   do arquivo), então lá NADA é escondido. */
+@media (min-width: 601px) and (max-width: 767px) {
   .table--admin th.cell--type,
   .table--admin td.cell--type,
   .table--admin th.cell--city,
@@ -3415,5 +3417,177 @@ body.no-scroll {
   }
   .medal__hint {
     font-size: 0.8rem;
+  }
+}
+
+/* =========================================================
+   ADMIN NO CELULAR
+   Problema: o body tem overflow-x: hidden e as tabelas do
+   admin têm até 12 colunas. No celular a tabela estourava a
+   largura e as colunas da direita (Status e, principalmente,
+   os botões de Ação) ficavam cortadas e inacessíveis.
+   Solução: container com rolagem como rede de segurança e,
+   no celular, cada linha da tabela vira um cartão com
+   rótulos — assim todos os dados e botões aparecem.
+   ========================================================= */
+
+/* Rede de segurança: nunca cortar colunas, permitir rolar */
+.admin-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 600px) {
+
+  /* --- Tabelas do admin viram cartões empilhados --- */
+  .table--admin,
+  .table--admin tbody,
+  .table--admin tr,
+  .table--admin td {
+    display: block;
+    width: 100%;
+  }
+
+  .table--admin thead {
+    display: none;
+  }
+
+  .table--admin tbody tr,
+  .table--admin tbody tr:nth-child(even),
+  .table--admin tbody tr:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+
+  /* Preserva o tom das linhas de kit recebido/pendente */
+  .table--admin tbody tr.kit-row--received { background: rgba(16, 86, 16, 0.18); }
+  .table--admin tbody tr.kit-row--pending { background: rgba(86, 36, 16, 0.1); }
+
+  .table--admin td {
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+    text-align: left;
+  }
+
+  .table--admin tr td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* Rótulo do campo, vindo do atributo data-label do template */
+  .table--admin td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 3px;
+  }
+
+  /* Célula sem conteúdo não ocupa espaço na tela */
+  .table--admin td:empty {
+    display: none;
+  }
+
+  /* Larguras fixas e alinhamentos de coluna não fazem sentido em cartão */
+  .table--admin .cell--id,
+  .table--admin .cell--plate,
+  .table--admin .cell--actions,
+  .table--admin .cell--status,
+  .table--admin .cell--type {
+    width: auto;
+  }
+
+  .table--admin .cell--amount {
+    text-align: left;
+  }
+
+  /* Botões de ação: um por linha, largura total, área de toque confortável.
+     Obs.: cada botão fica dentro de um <form style="display:inline;">, então
+     o empilhamento precisa ser aplicado tanto ao form quanto ao botão. */
+  .table--admin td.cell--actions .table-actions {
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .table--admin td.cell--actions .table-actions > form,
+  .table--admin td.cell--actions .table-actions > a.btn,
+  .table--admin td.cell--actions .table-actions > button.btn {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .table--admin td.cell--actions .table-actions > form {
+    display: flex !important;
+  }
+
+  .table--admin td.cell--actions .table-actions .btn {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    justify-content: center;
+  }
+
+  /* Linha de "nenhum registro": sem rótulo e centralizada */
+  .table--admin td[colspan] {
+    text-align: center;
+  }
+
+  .table--admin td[colspan]::before {
+    content: none;
+  }
+
+  /* --- Filtros: campos em coluna ocupando a largura toda --- */
+  .filter-bar__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-bar__row .filter-bar__input,
+  .filter-bar__row .filter-bar__segmented,
+  .filter-bar__row .btn {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-bar__row .filter-bar__segmented {
+    flex-wrap: wrap;
+  }
+
+  .filter-bar__row .btn {
+    height: 40px;
+  }
+
+  /* --- Formulários do admin (ex.: editar inscrição) em coluna --- */
+  .form__row {
+    flex-wrap: wrap;
+  }
+
+  .form__row > * {
+    flex: 1 1 100% !important;
+    min-width: 0;
+  }
+
+  /* --- Ações da galeria do admin --- */
+  .gallery-item__actions {
+    flex-wrap: wrap;
+  }
+
+  .gallery-item__actions .btn {
+    flex: 1 1 auto;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }

@@ -52,9 +52,9 @@
         {{#if regs.length}}
           {{#each regs}}
             <tr>
-              <td class="cell--id">{{this.id}}</td>
-              <td class="cell--plate">{{#if this.paidOrderStr}}{{this.paidOrderStr}}{{else}}{{this.paidOrder}}{{/if}}</td>
-              <td class="cell--name">
+              <td class="cell--id" data-label="ID">{{this.id}}</td>
+              <td class="cell--plate" data-label="Placa">{{#if this.paidOrderStr}}{{this.paidOrderStr}}{{else}}{{this.paidOrder}}{{/if}}</td>
+              <td class="cell--name" data-label="Nome">
                 <div style="font-weight:600;">{{this.displayName}}</div>
                 {{#if this.displayNameSmall}}
                   <div style="font-size:0.75rem; opacity:.75; color:#d1c89c;">(no cartão: {{this.displayNameSmall}})</div>
@@ -65,14 +65,14 @@
                   {{/unless}}
                 {{/if}}
               </td>
-              <td class="cell--cpf">{{this.cpf}}</td>
-              <td class="cell--type"><span class="type-badge" data-type="{{this.type}}">{{#if (eq this.type 'ATLETA')}}CICLISTA{{else}}ACOMPANHANTE{{/if}}</span></td>
-              <td class="cell--city">{{this.city}}</td>
-              <td class="cell--group">{{this.group}}</td>
-              <td class="cell--phone">{{this.phone}}</td>
-              <td class="cell--amount">{{this.amount}}</td>
-              <td class="cell--date">{{this.createdAt}}</td>
-              <td class="cell--status">
+              <td class="cell--cpf" data-label="CPF">{{this.cpf}}</td>
+              <td class="cell--type" data-label="Tipo"><span class="type-badge" data-type="{{this.type}}">{{#if (eq this.type 'ATLETA')}}CICLISTA{{else}}ACOMPANHANTE{{/if}}</span></td>
+              <td class="cell--city" data-label="Cidade">{{this.city}}</td>
+              <td class="cell--group" data-label="Grupo">{{this.group}}</td>
+              <td class="cell--phone" data-label="Telefone">{{this.phone}}</td>
+              <td class="cell--amount" data-label="Valor">{{this.amount}}</td>
+              <td class="cell--date" data-label="Criado em">{{this.createdAt}}</td>
+              <td class="cell--status" data-label="Status">
                 <span class="status-badge" data-status="{{#if this.isPaid}}paid{{else}}pending{{/if}}">{{#if this.isPaid}}Pago{{else}}Pendente{{/if}}</span>
                 {{#if this.isPaid}}
                   {{#if this.paymentConfirmedBy}}
@@ -80,7 +80,7 @@
                   {{/if}}
                 {{/if}}
               </td>
-              <td>
+              <td class="cell--actions" data-label="Ações">
                 <div class="table-actions" style="display:flex; align-items:center; gap:8px;">
                   <a href="/admin/inscricoes/{{this.id}}/editar" class="btn icon-btn--edit" aria-label="Editar" title="Editar">Editar</a>
                   {{#if this.isPaid}}
