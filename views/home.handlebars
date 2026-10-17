@@ -69,25 +69,6 @@
   </div>
 
   <div class="details__grid">
-    <div class="details__map-card">
-      <h3 class="details__subtitle">Mapa do Percurso</h3>
-      <div class="details__map">
-        <div class="video-preview" id="mapVideoPreview" aria-label="Prévia do vídeo do mapa do percurso">
-          <picture>
-            <source srcset="/public/img/rota.webp" type="image/webp" />
-            <img src="/public/img/rota.png" alt="Preview do vídeo do mapa do percurso" class="video-preview__image" />
-          </picture>
-          <button type="button" class="video-preview__play" aria-label="Assistir vídeo do mapa">
-            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="currentColor"
-              aria-hidden="true">
-              <path d="M8 5v14l11-7z"></path>
-            </svg>
-          </button>
-        </div>
-        <img src="/public/img/peixefundo.png" alt="" aria-hidden="true" class="details__map-overlay" />
-      </div>
-    </div>
-
     <div class="details__stats">
       <div class="stat">
         <span class="stat__icon" aria-hidden="true">
@@ -505,27 +486,6 @@
 
     // Primeira pintura imediata (o loop contínuo cuida das próximas atualizações)
     render();
-  })();
-</script>
-<script>
-  (function () {
-    const preview = document.getElementById('mapVideoPreview');
-    if (!preview) return;
-    const playBtn = preview.querySelector('.video-preview__play');
-    playBtn?.addEventListener('click', function () {
-      const video = document.createElement('video');
-      video.className = 'details__map-image';
-      video.controls = true;
-      video.autoplay = true;
-      video.playsInline = true;
-      video.preload = 'none';
-      const source = document.createElement('source');
-      source.src = '/public/img/videoRota.mp4';
-      source.type = 'video/mp4';
-      video.appendChild(source);
-      preview.replaceWith(video);
-      video.play?.().catch(() => { });
-    });
   })();
 </script>
 <div class="section-divider" aria-hidden="true"></div>

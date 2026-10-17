@@ -1152,11 +1152,6 @@ body.no-scroll {
     min-width: 220px;
   }
 
-  .details__grid {
-    grid-template-columns: 0.9fr 1.1fr;
-    align-items: start;
-  }
-
   .perks-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1174,6 +1169,7 @@ body.no-scroll {
 .footer__logo-icon {
   width: 40px;
   height: 40px;
+  object-fit: contain;
 }
 
 .footer__logo-title {
@@ -1475,101 +1471,10 @@ body.no-scroll {
   padding: 0 8px 8px;
 }
 
-.details__map {
-  position: relative;
-}
-
-.video-preview {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
-}
-
-.video-preview__image {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.video-preview__play {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.18));
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
-}
-
-.video-preview__play:hover {
-  background: linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0.24));
-}
-
-.video-preview__play:active {
-  transform: scale(0.98);
-}
-
-@media (min-width: 900px) {
-  .details__grid {
-    grid-template-columns: 0.9fr 1.1fr;
-    align-items: start;
-  }
-}
-
-.details__map-card {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
-  padding: 14px 14px 18px;
-}
-
-.details__map-card .details__subtitle {
-  color: #fff;
-}
-
 .details__subtitle {
   color: #0b2040;
   margin: 0 0 10px;
   font-weight: 800;
-}
-
-.details__map {
-  position: relative;
-}
-
-.details__map-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 12px;
-}
-
-/* Overlay do peixe sobre o mapa */
-.details__map {
-  position: relative;
-}
-
-.details__map-overlay {
-  position: absolute;
-  right: -50px;
-  bottom: -60px;
-  width: clamp(90px, 30%, 160px);
-  height: auto;
-  pointer-events: none;
-  z-index: 99999;
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.45));
-}
-
-@media (min-width: 768px) {
-  .details__map-overlay {
-    right: -70px;
-    bottom: -80px;
-    width: clamp(150px, 36%, 260px);
-  }
 }
 
 /* ícones de ciclistas removidos */
