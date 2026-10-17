@@ -86,4 +86,40 @@ async function run() {
   console.log('✓ WebP gerado para cada PNG/JPG. Atualize o .css para usar .webp primeiro (fallback .png automatico via media-url).');
 }
 
-run().catch(e => { console.error('Erro na otimização:', e); process.exit(1); });
+// Gera apenas os .webp que estão FALTANDO ou DESATUALIZADOS (origem mais nova que
+// o webp), sem tocar nos arquivos originais. Chamado no start do servidor: assim,
+// ao trocar uma imagem e reiniciar o PM2, o .webp também é refeito. Sem isso o
+// <picture> continuaria servindo o .webp antigo e a imagem nova nunca apareceria.
+async function syncWebp() {
+  if (!fs.existsSync(imgDir)) return { gerados: 0, total: 0 };
+  const files = fs.readdirSync(imgDir).filter(f => /\.(png|jpe?g)$/i.test(f));
+  let gerados = 0;
+  for (const f of files) {
+    const src = path.join(imgDir, f);
+    const ext = path.extname(f).toLowerCase();
+    const base = path.basename(f, ext);
+    const target = targets.find(t => t.file === f) || { quality: 78, maxWidth: 1600 };
+
+    const webpFile = path.join(imgDir, `${base}.webp`);
+    const webpExiste = fs.existsSync(webpFile);
+    if (webpExiste && fs.statSync(src).mtimeMs <= fs.statSync(webpFile).mtimeMs) continue;
+
+    let w = sharp(src).rotate();
+    const meta = await w.metadata().catch(() => ({}));
+    const curW = Number(meta.width) || 0;
+    const maxW = Number(target.maxWidth) || 0;
+    if (maxW && curW > maxW) w = w.resize({ width: maxW, withoutEnlargement: true });
+
+    const buf = await w.webp({ quality: target.quality || 76, effort: 6, preset: 'photo' }).toBuffer();
+    fs.writeFileSync(webpFile, buf);
+    gerados++;
+    console.log(`[webp] ${base}.webp regerado (${toKB(buf.length)})`);
+  }
+  return { gerados, total: files.length };
+}
+
+module.exports = { run, syncWebp };
+
+if (require.main === module) {
+  run().catch(e => { console.error('Erro na otimização:', e); process.exit(1); });
+}

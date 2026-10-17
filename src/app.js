@@ -145,15 +145,20 @@ app.use('/public', (req, res, next) => {
   next();
 });
 
-// Cache bust middleware: se NODE_ENV = dev → forçar NO-STORE em HTML 
+// Cache bust do HTML: o HTML é quem carrega o ?v=<hash> das imagens. Se o aparelho
+// guardar o HTML antigo, ele continua pedindo a imagem com a versão velha — e a
+// imagem nova nunca aparece. Por isso o HTML nunca é cacheado sem revalidação.
 app.use((req, res, next) => {
   res.setHeader('Vary', 'Accept-Encoding, User-Agent');
-  if (isDev) {
-    const isHtml = !req.path.includes('.') || req.path.endsWith('.html') || req.path.endsWith('.htm');
-    if (isHtml || req.path === '/' || req.path.startsWith('/inscricao') || req.path.startsWith('/admin') || req.path.startsWith('/home')) {
+  const isHtml = !req.path.includes('.') || req.path.endsWith('.html') || req.path.endsWith('.htm');
+  const isPagina = isHtml || req.path === '/' || req.path.startsWith('/inscricao') || req.path.startsWith('/admin') || req.path.startsWith('/home');
+  if (isPagina) {
+    if (isDev) {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, post-check=0, pre-check=0');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+    } else {
+      res.setHeader('Cache-Control', 'no-cache');
     }
   }
   next();
@@ -330,5 +335,15 @@ const PORT = Number(process.env.PORT);
 initDb().then(() => {
   app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
+    // Depois de trocar uma imagem e reiniciar, refaz os .webp que ficaram velhos.
+    // É o que garante que o <picture> não continue servindo a imagem antiga.
+    try {
+      const { syncWebp } = require('./scripts/optimize-images');
+      syncWebp()
+        .then(r => { if (r && r.gerados) console.log(`[webp] ${r.gerados} imagem(ns) sincronizada(s) no start`); })
+        .catch(e => console.warn('[webp] Falha ao sincronizar no start:', e.message));
+    } catch (e) {
+      console.warn('[webp] Sincronização indisponível:', e.message);
+    }
   });
 });

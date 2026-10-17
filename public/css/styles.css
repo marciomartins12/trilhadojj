@@ -13,26 +13,29 @@
                               PRÓPRIO e SÓLIDO, não vê a floresta.
      WebP SEMPRE primeiro, PNG fallback navegadores antigos.
      A classe .no-webp (detectada via inline JS) remove o WebP.
+     ?v=0 nas URLs: força o servidor a responder "no-cache" (revalida sempre)
+     e cria uma URL diferente da que ficou 1 ano no cache dos aparelhos —
+     assim, ao trocar a textura, os aparelhos antigos também pegam a nova.
      ===================================================== */
   --texture-mato-only:
-    url('/public/img/fundoMato.webp'),
-    url('/public/img/fundoMato.png');
+    url('/public/img/fundoMato.webp?v=0'),
+    url('/public/img/fundoMato.png?v=0');
 
   --tint-section:
     linear-gradient(  #005880a2, #207f909e);
 
   --texture-hero:
     linear-gradient(180deg, rgba(5, 30, 46, 0.815) 0%, rgba(9, 48, 73, 0.815)),
-    url('/public/img/peixefundo.webp'),
-    url('/public/img/peixefundo.png');
+    url('/public/img/peixefundo.webp?v=0'),
+    url('/public/img/peixefundo.png?v=0');
 }
 
 /* Fallback navegadores SEM WebP */
 .no-webp {
-  --texture-mato-only: url('/public/img/fundoMato.png');
+  --texture-mato-only: url('/public/img/fundoMato.png?v=0');
   --texture-hero:
     linear-gradient(180deg, rgba(5, 46, 22, 0.9) 0%, rgba(249, 115, 22, 0.55) 100%),
-    url('/public/img/peixefundo.png');
+    url('/public/img/peixefundo.png?v=0');
 }
 
 * {
@@ -3244,12 +3247,12 @@ body.no-scroll {
    (fica só WebP na camada fixa — 1 única requisição de textura) */
 @media (max-width: 767px) and (prefers-reduced-data: reduce) {
   body::before {
-    background-image: url('/public/img/fundoMato.webp');
+    background-image: url('/public/img/fundoMato.webp?v=0');
   }
   .hero {
     background-image:
       linear-gradient(180deg, rgba(5, 46, 22, 0.74) 0%, rgba(249, 115, 22, 0.55) 100%),
-      url('/public/img/peixefundo.webp');
+      url('/public/img/peixefundo.webp?v=0');
   }
 }
 
